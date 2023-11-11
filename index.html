@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <script src="./js/jquery-3.7.1.min.js"></script>
+    <link href="./css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/echarts.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input.form-control,
+        select.form-control,
+        .btn-outline-secondary {
+            height: 40px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            /* 添加底部间距 */
+        }
+
+        #chartContainer {
+            height: 400px;
+        }
+
+        #fileContent {
+            margin-top: 20px;
+        }
+    </style>
+    <title>Your Page Title</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="offset-2 col-8">
+                <div class="input-group">
+                    <input type="file" class="form-control" id="fileInput" aria-describedby="inputGroupFileAddon04"
+                        aria-label="Upload">
+                    <button class="btn btn-outline-secondary" type="button" id="btn">Button</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <form id="dataForm" name="myForm">
+                    <div class="form-group">
+                        <label for="dropdown">选择CANID：</label>
+                        <select class="form-control" id="dropdown" name="mySelect">
+                            <option selected disabled>请选择一个选项</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dropdown2">选择字节序</label>
+                        <select class="form-control" id="dropdown2" name="mySelect2">
+                            <option selected value="1">LE</option>
+                            <option value="2">BE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startBit">请输入开始位</label>
+                        <input type="number" placeholder="请输入开始位(bit)" id="startBit" name="startBit"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="bitLength">请输入长度</label>
+                        <input type="number" placeholder="请输入长度" id="bitLength" name="bitLength" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="precision">请输入精度</label>
+                        <input type="text" placeholder="请输入精度" class="form-control" name="precision" id="precision">
+                    </div>
+                    <div class="form-group">
+                        <label for="dataOffset">请输入偏移量</label>
+                        <input type="text" placeholder="请输入偏移量" class="form-control" name="dataOffset" id="dataOffset">
+                    </div>
+                    <div class="form-group">
+                        <label for="dataType">请选择数据类型</label>
+                        <select class="form-control" id="dataType" name="dataType">
+                            <option selected value="1">unsigned</option>
+                            <option value="2">signed</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="mySubmit">提交表单</button>
+                </form>
+            </div>
+            <div class="col-md-8" style="height: auto;">
+                <div id="chartContainer" style="height: 100%; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fileContent"></div>
+    <script src="./js/script.js"></script>
+    <script type="text/javascript">
+        let fileContentArray = [];
+
+        $('#btn').click(function () {
+            const file = $('#fileInput')[0].files[0]; // 获取第一个选择的文件
+            if (file) {
+                //判断文件是否是CSV 不是的话中断
+                const fileName = file.name;
+                const fileExtension = Tools.getFileExtension(fileName);
+                if (fileExtension === 'csv') {
+                    console.log('文件是CSV格式');
+                    $('#fileContent').innerText = ''
+                } else {
+                    console.log('文件不是CSV格式');
+                    $('#fileContent').innerText = '文件不是CSV格式'
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileText = e.target.result; // 获取文件内容
+                    fileContentArray = Tools.parseCSV(fileText)
+                    let CANIDlist = Tools.getAllCANId(fileContentArray)
+                    renderDropdownOptions(CANIDlist);
+                };
+                reader.readAsText(file, 'UTF-8');
+            } else {
+                console.log('没有选择文件');
+            }
+        });
+        $("#mySubmit").click(function (e) {
+            if (fileContentArray.length < 1) {
+                alert("请上传CSV文件");
+                return;
+            }
+
+            let startBit = $("#startBit").val();
+            let bitLength = $("#bitLength").val();
+            let bitOrder = $("#dropdown2").val();
+            let isSigned = $("#dataType").val();
+            let precision = $("#precision").val();
+            let dataOffset = $("#dataOffset").val();
+            let filteredData = fileContentArray
+                .filter((subarray) => subarray[5] == myForm.mySelect.value)
+                .map((value, index, array) => {
+                    // 检查元素是否为数字
+                    return [
+                        Tools.parseCANData(
+                            value[9]
+                                .replace(/^x\|\s*/i, "")
+                                .replace(/\s/g, "")
+                                .toUpperCase()
+                                .match(/.{1,2}/g),
+                            bitOrder,
+                            parseInt(startBit),
+                            parseInt(bitLength),
+                            precision,
+                            dataOffset,
+                            isSigned
+                        ),
+                        value[1].match(/\d{2}:\d{2}:\d{2}\.\d{3}/)[0],
+                    ];
+                });
+            Tools.drawPoint(filteredData);
+        });
+
+        function renderDropdownOptions(data) {
+            const dropdown = $("#dropdown");
+            dropdown.empty(); // 清空下拉菜单的内容
+
+            data.forEach((item) => {
+                // 创建一个<option>元素并将数据作为选项的文本值
+                const option = `<option>${item}</option>`;
+                dropdown.append(option);
+            });
+        }
+    </script>
+</body>
+
+</html>
