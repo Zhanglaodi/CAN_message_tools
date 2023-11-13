@@ -1,0 +1,15 @@
+{
+  "name": "analysis",
+  "version": "1.0.0",
+  "description": "一个CAN报文解析工具",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^27.0.4"
+  }
+}
