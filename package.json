@@ -15,9 +15,9 @@
   },
   "build": {
     "appId": "com.dalaodi.can_tools",
-    "copyright": "大佬帝",
+    "copyright": "dalaodi",
     "productName": "一个CAN报文解析工具",
-    "icon": "logo.ico",
+    "icon": "R-C.png",
     "win": {
       "target": [
         "portable"

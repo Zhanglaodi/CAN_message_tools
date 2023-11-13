@@ -5,6 +5,8 @@ const createWindow = () => {
     width: 1200,
     height: 850,
     title: "CAN曲线分析工具(CSV)",
+    resizable: false,
+    icon:"./R-C.png"
   });
   win.removeMenu();
   win.loadFile("index.html");
