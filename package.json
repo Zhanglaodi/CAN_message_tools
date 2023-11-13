@@ -11,5 +11,16 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^27.0.4"
+  },
+  "build": {
+    "appId": "com.dalaodi.can_tools",
+    "copyright":"大佬帝",
+    "productName":"一个CAN报文解析工具",
+    "icon": "logo.ico",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
   }
 }
