@@ -4,12 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CAN曲线分析工具(CSV)</title>
     <script src="./js/jquery-3.7.1.min.js"></script>
     <link href="./css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <link href="./css/style.css" type="text/css" rel="stylesheet">
     <script src="./js/bootstrap.min.js"></script>
     <script src="./js/echarts.min.js"></script>
-    <title>CAN曲线分析工具(CSV)</title>
+    <script src="./js/watermark.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // 在页面加载完成后调用水印函数
+            watermark({
+                watermark_txt: '仅供创芯使用',
+            });
+        });
+    </script>
 </head>
 
 <body>
