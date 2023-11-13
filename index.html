@@ -78,7 +78,7 @@
     <script src="./js/script.js"></script>
     <script type="text/javascript">
         let fileContentArray = [];
-
+        let series = [];
         $('#btn').click(function () {
             const file = $('#fileInput')[0].files[0]; // 获取第一个选择的文件
             if (file) {
@@ -93,6 +93,7 @@
                     $('#fileContent').innerText = '文件不是CSV格式'
                     return;
                 }
+                series = [];
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     const fileText = e.target.result; // 获取文件内容
@@ -106,8 +107,6 @@
             }
         });
 
-        //初始化时间
-        let series = [];
         //曲线提交事件
         $("#mySubmit").click(function (e) {
             if (fileContentArray.length < 1) {
@@ -143,7 +142,6 @@
                     ];
                 });
             series.push(filteredData)
-            console.log(series);
             Tools.drawPoint(series);
         });
 
