@@ -20,8 +20,8 @@
             <div class="offset-2 col-8">
                 <div class="input-group">
                     <input type="file" class="form-control" id="fileInput" aria-describedby="inputGroupFileAddon04"
-                        aria-label="Upload">
-                    <button class="btn btn-outline-secondary" type="button" id="btn">Button</button>
+                        aria-label="Upload" accept=".csv">
+                    <button class="btn btn-outline-secondary" type="button" id="btn">上传</button>
                 </div>
             </div>
         </div>
@@ -37,8 +37,8 @@
                     <div class="form-group">
                         <label for="dropdown2">选择字节序</label>
                         <select class="form-control" id="dropdown2" name="mySelect2">
-                            <option selected value="1">LE</option>
-                            <option value="2">BE</option>
+                            <option selected value="1">LE(Intel)</option>
+                            <option value="2">BE(Motorola)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -65,7 +65,7 @@
                             <option value="2">signed</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-primary" id="mySubmit">提交表单</button>
+                    <button type="button" class="btn btn-primary" id="mySubmit">生成曲线</button>
                 </form>
             </div>
             <div class="col-md-8" style="height: auto;">
@@ -105,6 +105,10 @@
                 console.log('没有选择文件');
             }
         });
+
+        //初始化时间
+        let series = [];
+        //曲线提交事件
         $("#mySubmit").click(function (e) {
             if (fileContentArray.length < 1) {
                 alert("请上传CSV文件");
@@ -138,7 +142,9 @@
                         value[1].match(/\d{2}:\d{2}:\d{2}\.\d{3}/)[0],
                     ];
                 });
-            Tools.drawPoint(filteredData);
+            series.push(filteredData)
+            console.log(series);
+            Tools.drawPoint(series);
         });
 
         function renderDropdownOptions(data) {

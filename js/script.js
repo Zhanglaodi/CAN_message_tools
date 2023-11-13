@@ -158,23 +158,29 @@ let Tools = {
 
     // 对数据进行处理，将其转换为 ECharts 所需的格式
     var echartsData = {
-      series: [
-        {
-          type: "line",
-          data: rawData.map((dataPoint) => ({
-            value: dataPoint[0],
-            name: dataPoint[1],
-          })),
-        },
-      ],
+      // series: [
+      //   {
+      //     type: "line",
+      //     data: rawData.map((dataPoint) => ({
+      //       value: dataPoint[0],
+      //       name: dataPoint[1],
+      //     })),
+      //   },
+      // ],
+      series: rawData.map((group) => ({
+        type: "line",
+        data: group.map((dataPoint) => ({
+          value: dataPoint[0],
+          name: dataPoint[1],
+        })),
+      })),
     };
-
     // 配置图表选项
     var option = {
       xAxis: {
         name: "时间",
         type: "category",
-        data: echartsData.series[0].data.map((dataPoint) => dataPoint.name),
+        data: rawData[0].map((dataPoint) => dataPoint[1]),
         splitLine: {
           show: true,
           lineStyle: {
@@ -192,25 +198,56 @@ let Tools = {
         },
       },
       series: echartsData.series,
+      animation: false,
+      grid: {
+        top: 40,
+        left: 50,
+        right: 120,
+        bottom: 50,
+      },
       dataZoom: [
         {
-          type: "slider", // 滑动条型
-          start: 0, // 数据窗口范围的起始百分比
-          end: 100, // 数据窗口范围的结束百分比
-          showDataShadow: true, // 是否显示数据阴影
-          handleSize: 8, // 滑动条的手柄大小
+          show: true,
+          type: "inside",
+          filterMode: "none",
+          xAxisIndex: [0],
         },
         {
-          type: "inside", // 内部缩放
+          show: true,
+          type: "inside",
+          filterMode: "none",
+          yAxisIndex: [0],
+        },
+        {
+          type: "slider",
+          show: true,
+          xAxisIndex: [0],
+          start: 0,
+          end: 100,
+        },
+        {
+          type: "slider",
+          show: true,
+          yAxisIndex: [0],
+          left: "93%",
+          start: 0,
+          end: 100,
         },
       ],
-      // 添加还原按钮
-      restore: {
+      toolbox: {
         show: true,
+        feature: {
+          dataZoom: {
+            show: true,
+          },
+        },
       },
-      // 添加保存为图片按钮
-      saveAsImage: {
-        show: true,
+      tooltip: {
+        axisPointer: {
+          //十字标
+          type: "cross",
+        },
+        trigger: "axis", //跟随鼠标指针显示数据
       },
     };
 
